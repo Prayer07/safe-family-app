@@ -40,7 +40,7 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       await axios.post(`${API_BASE_URL}/auth/register`, data);
-      router.push("/login");
+      router.push("/onboarding");
     } catch (err: any) {
       setError(err.response?.data?.error || "Signup failed");
     } finally {
@@ -85,6 +85,7 @@ export default function RegisterScreen() {
                 style={styles.input}
                 placeholder="Email address"
                 placeholderTextColor="#777"
+                keyboardType="email-address"
                 value={value}
                 onChangeText={onChange}
               />
@@ -102,6 +103,7 @@ export default function RegisterScreen() {
                 style={styles.input}
                 placeholder="Phone Number"
                 placeholderTextColor="#777"
+                keyboardType="phone-pad"
                 value={value}
                 onChangeText={onChange}
               />

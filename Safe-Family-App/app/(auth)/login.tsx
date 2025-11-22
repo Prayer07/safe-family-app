@@ -69,6 +69,7 @@ export default function LoginScreen() {
                 style={styles.input}
                 placeholder="Email address"
                 placeholderTextColor="#777"
+                keyboardType="email-address"
                 value={value}
                 onChangeText={onChange}
               />
