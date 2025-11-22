@@ -14,7 +14,7 @@ const CONFIG = {
     API_URL: "https://safe-family3.vercel.app/api",
   },
   production: {
-    API_URL: "https://safe-family3.onrender.com/api",
+    API_URL: "https://safe-family-app.onrender.com/api",
   },
 };
 
