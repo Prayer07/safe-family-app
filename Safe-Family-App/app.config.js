@@ -25,7 +25,7 @@ export default
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon6.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -41,6 +41,14 @@ export default
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
+    plugins: [
+      "expo-router",
+      [
+        "expo-notifications",
+      ]
+    ],
+
     "extra": {
       env: "production",
       "eas": {
