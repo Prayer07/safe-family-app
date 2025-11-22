@@ -17,12 +17,16 @@ export const createFamily = async (req: Request, res: Response) => {
 
     const family = await Family.create({
       name,
-      owner: userId,
-      members: [userId],
+      owner: new mongoose.Types.ObjectId(userId),
+      members: [new mongoose.Types.ObjectId(userId)], // ✅ Array of ObjectIds
       inviteCode,
     });
 
-    await User.findByIdAndUpdate(userId, { family: family._id });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { family: family._id as mongoose.Types.ObjectId }, // ✅ Type assertion
+      { new: true }
+    );
 
     res.status(201).json(family);
   } catch (err) {

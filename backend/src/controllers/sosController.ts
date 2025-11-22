@@ -27,9 +27,9 @@ export const triggerSos = async (req: Request, res: Response) => {
 
     // Create SOS alert (add coords if you want to save them)
     const sos = await SosAlert.create({
-      family: family._id,
+      family: family._id as mongoose.Types.ObjectId,
       triggeredBy: new mongoose.Types.ObjectId(userId),
-      coords, // ✅ Save the coordinates
+      coords: { },
       status: "triggered",
       timestamp: new Date(),
       responders: [],
@@ -50,7 +50,7 @@ export const triggerSos = async (req: Request, res: Response) => {
           `${user.fullname} needs help!`,
           {
             type: "sos",
-            sosId: sos._id.toString(),
+            sosId: String(sos._id),
             lat: coords?.lat?.toString() || "",
             lng: coords?.lng?.toString() || "",
             userName: user.fullname,

@@ -25,9 +25,9 @@ export const pushLocation = async (req: Request, res: Response) => {
     const loc = await Location.create({
       user: new mongoose.Types.ObjectId(userId),
       coords: { lat, lng },
-      accuracy,
-      speed,
-      heading,
+      accuracy: accuracy ?? 0,
+      speed: speed ?? 0,
+      heading: heading ?? 0,
       timestamp: new Date(),
     });
 
