@@ -18,9 +18,10 @@ import axios from "axios";
 import { API_BASE_URL } from "../../context/AuthContext";
 
 const signupSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
+  fullname: z.string().min(2, "Full name must be at least 3 characters"),
+  email: z.string().email("Invalid email address"), 
+  phone: z.string().min(10, "Phone must be at least 10 digits"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type SignupForm = z.infer<typeof signupSchema>;
@@ -59,7 +60,7 @@ export default function RegisterScreen() {
         {/* Name */}
         <Controller
           control={control}
-          name="name"
+          name="fullname"
           render={({ field: { onChange, value } }) => (
             <View style={styles.inputWrapper}>
               <TextInput
@@ -69,7 +70,7 @@ export default function RegisterScreen() {
                 value={value}
                 onChangeText={onChange}
               />
-              {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
+              {errors.fullname && <Text style={styles.error}>{errors.fullname.message}</Text>}
             </View>
           )}
         />
@@ -88,6 +89,23 @@ export default function RegisterScreen() {
                 onChangeText={onChange}
               />
               {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+            </View>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Phone Number"
+                placeholderTextColor="#777"
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.phone && <Text style={styles.error}>{errors.phone.message}</Text>}
             </View>
           )}
         />
