@@ -50,7 +50,7 @@ export default
     ],
 
     "extra": {
-      env: "development",
+      env: "production",
       "eas": {
         "projectId": "4e78c582-1b13-4d1b-9435-fae13dd5ee22"
       }
