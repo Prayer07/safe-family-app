@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import { API_BASE_URL } from "../../context/AuthContext";
+import { saveToken } from "../../utils/secureStorage";
 
 const signupSchema = z.object({
   fullname: z.string().min(2, "Full name must be at least 3 characters"),
@@ -39,7 +40,9 @@ export default function RegisterScreen() {
   const onSubmit = async (data: SignupForm) => {
     setLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/auth/register`, data);
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, data);
+      console.log("Signup successful:", res.data);
+      await saveToken(res.data.token);
       router.push("/onboarding");
     } catch (err: any) {
       setError(err.response?.data?.error || "Signup failed");

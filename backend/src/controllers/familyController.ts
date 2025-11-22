@@ -22,7 +22,7 @@ export const createFamily = async (req: Request, res: Response) => {
       inviteCode,
     });
 
-    const user = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       userId,
       { family: family._id as mongoose.Types.ObjectId }, // ✅ Type assertion
       { new: true }

@@ -30,8 +30,8 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 40 },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#1F242C", },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 40, color: "#fff" },
   button: {
     backgroundColor: "#1E90FF",
     padding: 14,

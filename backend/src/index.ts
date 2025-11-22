@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoute.js"
 import familyRoutes from "./routes/familyRoute.js"
 import sosRoutes from "./routes/sosRoute.js"
 import locationRoutes from "./routes/location.js";
-import historyRoutes from "./routes/history.js"
+import historyRoutes from "./routes/history.js";
 
 
 dotenv.config();

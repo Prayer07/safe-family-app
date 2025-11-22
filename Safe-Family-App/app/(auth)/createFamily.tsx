@@ -19,6 +19,8 @@ export default function CreateFamilyScreen() {
     setLoading(true);
 
     const token = await getToken();
+    console.log("🎫 Token to send:", token); // ✅ Check this
+    console.log("🎫 Token length:", token?.length)
     try {
       await axios.post(
         `${API_BASE_URL}/family/create`,
@@ -58,14 +60,15 @@ export default function CreateFamilyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 28, fontWeight: "600", marginBottom: 20 },
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#1F242C" },
+  title: { fontSize: 28, fontWeight: "600", marginBottom: 20, color: "#fff" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
+    color: "#fff",
   },
   button: {
     backgroundColor: "#1E90FF",

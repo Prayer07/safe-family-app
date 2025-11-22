@@ -18,8 +18,7 @@ export default function JoinFamilyScreen() {
   const onSubmit = async (data: { inviteCode: string }) => {
     setLoading(true);
 
-    const token = await getToken()
-    
+    const token = await getToken()    
 
     try {
       await axios.post(`${API_BASE_URL}/family/join`, {
@@ -58,14 +57,15 @@ export default function JoinFamilyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 28, fontWeight: "600", marginBottom: 20 },
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#1F242C" },
+  title: { fontSize: 28, fontWeight: "600", marginBottom: 20, color: "#fff" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
+    color: "#fff",
   },
   button: {
     backgroundColor: "#1E90FF",
