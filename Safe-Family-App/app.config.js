@@ -9,7 +9,7 @@ export default
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon6.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/icon6.png",
