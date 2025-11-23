@@ -32,6 +32,7 @@ export default function _layout() {
           options={{
             title: "Members", 
             animation: "shift",
+            headerShown: false,
             tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} />,
           }}/>
 
@@ -58,6 +59,7 @@ export default function _layout() {
           options={{
             title: "Settings", 
             animation: "shift",
+            headerShown: false,
             tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
           }}/>
     </Tabs>

@@ -5,6 +5,7 @@ import { SosAlert } from "../models/SosAlert.js";
 import mongoose from "mongoose";
 import { connectDB } from "../db.js";
 import { Family } from "../models/Family.js";
+import { Location } from "../models/Location.js";
 
 
 export const triggerSos = async (req: Request, res: Response) => {
@@ -14,22 +15,29 @@ export const triggerSos = async (req: Request, res: Response) => {
   const { coords } = req.body as { coords?: { lat: number; lng: number } };
 
   if (!userId) return res.status(401).json({ error: "Unauthorized" });
+  if (!coords) return res.status(400).json({ error: "Missing coords" });
 
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // Get family with push tokens
     const family = await Family.findOne({ members: userId })
-      .populate("members", "fullname expoPushToken"); // ✅ Include expoPushToken
-    
+      .populate("members", "fullname expoPushToken");
+
     if (!family) return res.status(404).json({ message: "No family" });
 
-    // Create SOS alert (add coords if you want to save them)
+    // ✅ Save actual coords in Location model
+    const location = await Location.create({
+      user: new mongoose.Types.ObjectId(userId),
+      coords: { lat: coords.lat, lng: coords.lng },
+      timestamp: new Date(),
+    });
+
+    // ✅ Save SOS with Location reference
     const sos = await SosAlert.create({
-      family: family._id as mongoose.Types.ObjectId,
-      triggeredBy: new mongoose.Types.ObjectId(userId),
-      coords: { },
+      family: family._id,
+      triggeredBy: userId,
+      location: location._id,
       status: "triggered",
       timestamp: new Date(),
       responders: [],
@@ -76,5 +84,45 @@ export const triggerSos = async (req: Request, res: Response) => {
   } catch (err) {
     console.error("SOS trigger error:", err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export const resolveSos = async (req: Request, res: Response) => {
+  await connectDB();
+
+  const userId = req.user?.id;
+  const { sosId } = req.params;
+
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const sos = await SosAlert.findById(sosId);
+    if (!sos) return res.status(404).json({ error: "SOS not found" });
+
+    // Check if user is in the family
+    const family = await Family.findOne({ 
+      _id: sos.family as mongoose.Types.ObjectId, 
+      members: userId as mongoose.Types.ObjectId,
+    });
+    
+    if (!family) {
+      return res.status(403).json({ error: "Not authorized to resolve this SOS" });
+    }
+
+    // Update SOS status
+    sos.status = "resolved";
+    sos.resolvedBy = new mongoose.Types.ObjectId(userId);
+    sos.resolvedAt = new Date();
+    await sos.save();
+
+    res.json({ 
+      success: true, 
+      message: "SOS marked as resolved",
+      sos 
+    });
+  } catch (err) {
+    console.error("Resolve SOS error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

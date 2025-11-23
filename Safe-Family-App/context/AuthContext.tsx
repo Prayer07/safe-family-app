@@ -12,9 +12,6 @@ import config from "../utils/config";
 
 export const API_BASE_URL = config.API_URL;
 
-// --------------------
-// 1. Define User Types
-// --------------------
 export interface IUser {
   _id: string;
   fullname: string;
@@ -24,9 +21,6 @@ export interface IUser {
   updatedAt?: string;
 }
 
-// ----------------------------------------
-// 2. Define the Auth Context interface
-// ----------------------------------------
 interface AuthContextType {
   user: IUser | null;
   setUser: Dispatch<SetStateAction<IUser | null>>;
@@ -34,7 +28,6 @@ interface AuthContextType {
   setToken: Dispatch<SetStateAction<string | null>>;
 }
 
-// Default Values (safe!)
 export const Auth = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
@@ -42,14 +35,11 @@ export const Auth = createContext<AuthContextType>({
   setToken: () => {},
 });
 
-// ----------------------------------------
-// 3. Provider Component
-// ----------------------------------------
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // Load token on app start
+  // Load token at startup only once
   useEffect(() => {
     const loadToken = async () => {
       const storedToken = await getToken();

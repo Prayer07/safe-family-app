@@ -43,11 +43,10 @@ export default function SettingsScreen() {
     }
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>⚙️ Settings</Text>
-      <Text style={styles.text}>Signed in as: {user ? user.fullname : "Guest"}</Text>
+      <Text style={styles.text}>Signed in as: {user?.fullname}</Text>
 
       <Pressable style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Log out</Text>
@@ -57,9 +56,9 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24 },
+  container: { flex: 1, padding: 24, justifyContent: "center" },
   title: { fontSize: 22, fontWeight: "700", marginBottom: 12 },
-  text: { marginBottom: 20 },
+  text: { marginBottom: 20, fontSize: 16 },
   button: { backgroundColor: "#FF3B30", padding: 12, borderRadius: 8, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "700" },
 });

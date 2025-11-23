@@ -19,8 +19,7 @@ export default function CreateFamilyScreen() {
     setLoading(true);
 
     const token = await getToken();
-    console.log("🎫 Token to send:", token); // ✅ Check this
-    console.log("🎫 Token length:", token?.length)
+
     try {
       await axios.post(
         `${API_BASE_URL}/family/create`,

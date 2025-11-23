@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "axios": "^1.13.2",
     "expo": "~54.0.25",
     "expo-clipboard": "^8.0.7",

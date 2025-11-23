@@ -14,28 +14,17 @@ export default function HomeScreen() {
         const token = await getToken();
 
         if (!token) {
-          // show loading for a moment then go login
-          setTimeout(() => {
-            router.replace("/login");
-          }, 1000);
+          setTimeout(() => router.replace("/login"), 500);
           return;
         }
 
-        // validate the user
         await axios.get(`${API_BASE_URL}/auth/get-user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // valid user → show loading then go to map
-        setTimeout(() => {
-          router.replace("/map");
-        }, 1000);
-
+        setTimeout(() => router.replace("/map"), 500);
       } catch (err) {
-        // token invalid → go login
-        setTimeout(() => {
-          router.replace("/login");
-        }, 1000);
+        setTimeout(() => router.replace("/login"), 500);
       }
     };
 

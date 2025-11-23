@@ -16,9 +16,11 @@ interface PopulatedSos {
   _id: string;
   type: "sos";
   triggeredBy: { _id: string; fullname: string; phone: string } | null;
-  coords: { lat: number; lng: number };
+  location: {coords: { lat: number; lng: number }};
   status: string;
   timestamp: Date;
+  resolvedBy: { fullname: string };
+  resolvedAt: Date;
 }
 
 export const getHistory = async (req: Request, res: Response) => {
@@ -43,6 +45,7 @@ export const getHistory = async (req: Request, res: Response) => {
       .sort({ timestamp: -1 })
       .limit(20)
       .populate("triggeredBy", "fullname phone")
+      .populate("location") // 📌 GET COORDS FROM HERE
       .lean<PopulatedSos[]>();
 
     const hist = [
@@ -57,7 +60,7 @@ export const getHistory = async (req: Request, res: Response) => {
         _id: s._id,
         type: "sos" as const,
         triggeredBy: s.triggeredBy?.fullname ?? "Unknown", // ✅ type-safe
-        coords: s.coords,
+        coords: s.location?.coords ?? { lat: 0, lng: 0 }, // 📌 FIXED
         status: s.status,
         timestamp: s.timestamp,
       })),
@@ -68,6 +71,39 @@ export const getHistory = async (req: Request, res: Response) => {
     res.json(hist);
   } catch (err) {
     console.error("❌ History error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getSosHistory = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const family = await Family.findOne({ members: userId });
+    if (!family) return res.status(404).json({ message: "No family" });
+
+    const sosAlerts = await SosAlert.find({ family: family._id })
+      .sort({ timestamp: -1 })
+      .populate("triggeredBy", "fullname")
+      .populate("resolvedBy", "fullname")
+      .populate("location") // 📌 IMPORTANT
+      .lean<PopulatedSos[]>();
+
+    const formatted = sosAlerts.map((s) => ({
+      _id: s._id,
+      triggeredBy: s.triggeredBy?.fullname ?? "Unknown",
+      coords: s.location?.coords ?? { lat: 0, lng: 0 }, // 📌 FIXED
+      status: s.status,
+      timestamp: s.timestamp,
+      resolvedBy: s.resolvedBy?.fullname,
+      resolvedAt: s.resolvedAt,
+    }));
+
+    res.json(formatted);
+
+  } catch (err) {
+    console.error("❌ SOS History error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

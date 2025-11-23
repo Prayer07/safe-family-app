@@ -15,6 +15,7 @@ import usePushNotification from "../../hooks/usePushNotification";
 import axios from "axios";
 import { API_BASE_URL } from "../../context/AuthContext";
 import { getToken } from "../../utils/secureStorage";
+import { useSOS } from "../../hooks/useSOS";
 
 
 interface MemberLocation {
@@ -39,54 +40,7 @@ export default function MapScreen() {
   const [members, setMembers] = useState<MemberLocation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = async () => {
-    try {
-    const token = await getToken();
-      const data = await axios.get(`${API_BASE_URL}/location/family/last`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        },
-      }).then(res => res.data as MemberLocation[]);
-
-      // ✅ Filter invalid locations
-      const validMembers = data.filter(
-        (m) =>
-          typeof m.lat === "number" &&
-          !isNaN(m.lat) &&
-          typeof m.lng === "number" &&
-          !isNaN(m.lng)
-      );
-
-      setMembers(validMembers);
-
-      // ✅ Auto-center to first valid member
-      if (validMembers.length > 0) {
-        const first = validMembers[0];
-        setRegion((r) => ({
-          ...r,
-          latitude: first.lat,
-          longitude: first.lng,
-        }));
-      }
-    } catch (err) {
-      console.error("Failed to load locations:", err);
-      Alert.alert("Error", "Failed to load family locations");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await load();
-    setRefreshing(false);
-  }, [members]);
-
-  const centerOnMe = async () => {
+  const centerOnMe = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -107,57 +61,70 @@ export default function MapScreen() {
         longitude: lng,
       }));
 
-      // ✅ Post location to backend
-      try {
-        const token = await getToken();
-        await axios.post(`${API_BASE_URL}/location`,
-          { lat, lng },
-          {
-            headers: {
-            Authorization: `Bearer ${token}`
-          }
-          }
-        );
-      } catch (e) {
-        console.error("Failed to post location:", e);
-      }
+      // Post location to backend
+      const token = await getToken();
+      await axios.post(
+        `${API_BASE_URL}/location`,
+        { lat, lng },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (err) {
       console.error("Center on me failed:", err);
       Alert.alert("Error", "Failed to get your location");
     }
-  };
+  }, []);
 
-  const triggerSOS = async () => {
+  // In map.tsx
+  const { triggerSOS, sending } = useSOS();
+
+    const load = useCallback(async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission Required", "Location permission is required for SOS");
-        return;
-      }
+      const token = await getToken();
+      const data = await axios.get(`${API_BASE_URL}/location/family/last`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => res.data as MemberLocation[]);
 
-      const pos = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-
-
-     const token = await getToken();
-
-      const res = await axios.post(`${API_BASE_URL}/sos/trigger`, 
-        {coords: { lat: pos.coords.latitude, lng: pos.coords.longitude }},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+      const validMembers = data.filter(
+        (m) => typeof m.lat === "number" && !isNaN(m.lat) && 
+              typeof m.lng === "number" && !isNaN(m.lng)
       );
-      console.log('Response:', res);
 
-      Alert.alert("✅ SOS Sent", "Your family has been notified!");
+      setMembers(validMembers);
+
+      if (validMembers.length > 0) {
+        const first = validMembers[0];
+        setRegion((r) => ({
+          ...r,
+          latitude: first.lat,
+          longitude: first.lng,
+        }));
+      }
     } catch (err) {
-      console.error("SOS failed:", err);
-      Alert.alert("Error", "Failed to send SOS alert");
+      console.error("Failed to load locations:", err);
+      Alert.alert("Error", "Failed to load family locations");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []); // ✅ No dependencies - stable reference
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    await centerOnMe();
+    setRefreshing(false);
+  }, [load, centerOnMe]); // ✅ Now stable
+
+  useEffect(() => {
+    load();
+    centerOnMe();
+
+    // ✅ Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      load();
+    }, 30000); // 30 seconds
+
+  return () => clearInterval(interval);
+  }, [load]); // ✅ Proper dependencies
 
   if (loading) {
     return (
@@ -206,15 +173,30 @@ export default function MapScreen() {
           </View>
         )}
 
-        <Pressable style={[styles.fab, { bottom: 120 }]} onPress={centerOnMe}>
-          <Text style={styles.fabText}>ME</Text>
+        <Pressable style={[styles.fab, { bottom: 120 }]}
+          onPress={centerOnMe}
+          disabled={sending}
+        >
+        {sending ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.fabText}>Me</Text>
+        )}
         </Pressable>
 
         <Pressable
           style={[styles.fab, { bottom: 40, backgroundColor: "#FF3B30" }]}
-          onPress={triggerSOS}
+          onPress={async () => {
+            const success = await triggerSOS();
+            if (success) centerOnMe();
+          }}
+          disabled={sending}
         >
-          <Text style={styles.fabText}>SOS</Text>
+        {sending ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.fabIcon}>🚨</Text>
+        )}
         </Pressable>
       </View>
     </ScrollView>
@@ -252,4 +234,5 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   fabText: { color: "#fff", fontWeight: "700", fontSize: 18 },
+  fabIcon: { fontSize: 24 },
 });
