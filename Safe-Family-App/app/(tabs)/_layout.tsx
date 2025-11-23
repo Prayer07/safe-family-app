@@ -1,11 +1,13 @@
 import { Stack, Tabs } from 'expo-router'
 import React from 'react'
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from 'react-native';
 
 
 export default function _layout() {
   return (
     <>
+    <StatusBar barStyle="light-content" backgroundColor="#1F242C" />
     <Tabs
       screenOptions={{
         // headerShown: false,
