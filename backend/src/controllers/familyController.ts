@@ -75,3 +75,30 @@ export const getMyFamily = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const leaveFamily = async (req: Request, res: Response) => {
+  const userId = req.user?.id; // assuming middleware adds req.user
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    // Find the family where the user is a member
+    const family = await Family.findOne({ members: userId });
+    if (!family) return res.status(404).json({ message: "Family not found" });
+
+    // Remove user from members array
+    family.members = family.members.filter(
+      (memberId) => memberId.toString() !== userId
+    );
+
+    await family.save();
+
+    res.json({
+      success: true,
+      message: "You have left the family",
+      family,
+    });
+  } catch (err) {
+    console.error("Leave family error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

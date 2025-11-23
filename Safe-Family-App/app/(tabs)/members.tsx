@@ -15,7 +15,8 @@ import {
 import * as Clipboard from "expo-clipboard";
 import axios from "axios";
 import { API_BASE_URL } from "../../context/AuthContext";
-import { getToken } from "../../utils/secureStorage";
+import { getToken, removeToken } from "../../utils/secureStorage";
+import { useRouter } from "expo-router";
 
 interface Member {
   _id: string;
@@ -43,6 +44,7 @@ export default function MembersScreen() {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>("");
+  const router = useRouter()
 
   // Load family data
   const loadFamily = useCallback(async () => {
@@ -143,37 +145,54 @@ export default function MembersScreen() {
       ]
     );
   };
+  
 
-  // Leave family
-  const leaveFamily = async () => {
-    Alert.alert(
-      "Leave Family",
-      "Are you sure you want to leave this family?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Leave",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const token = await getToken();
-              await axios.post(
-                `${API_BASE_URL}/family/leave`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-              
-              Alert.alert("Left Family", "You have left the family");
-              setFamilyData(null);
-            } catch (err) {
-              console.error("Leave family failed:", err);
-              Alert.alert("Error", "Failed to leave family");
-            }
-          },
+const leaveFamily = async () => {
+  Alert.alert(
+    "Leave Family",
+    "Are you sure you want to leave this family?",
+    [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Leave",
+        style: "destructive",
+        onPress: async () => {
+          setLoading(true);
+          try {
+            // Get auth token
+            const token = await getToken();
+            if (!token) throw new Error("Not authenticated");
+
+            // Call backend to leave family
+            await axios.post(
+              `${API_BASE_URL}/family/leave`,
+              {},
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Remove local token
+            await removeToken();
+
+            // Clear local family data just in case (good practice)
+            setFamilyData(null);
+
+            // Navigate to login
+            router.replace("/login");
+
+            // Show confirmation (optional after navigation)
+            Alert.alert("Success", "You have left the family");
+          } catch (err: any) {
+            console.error("Leave family failed:", err.response?.data || err.message);
+            Alert.alert("Error", "Failed to leave family");
+          } finally {
+            setLoading(false);
+          }
         },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
+
 
   // Filter members by search query
   const filteredMembers = familyData?.members.filter((m) =>
