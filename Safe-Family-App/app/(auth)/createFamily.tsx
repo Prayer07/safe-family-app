@@ -3,11 +3,8 @@ import axios from "axios";
 import { useRouter } from "expo-router";
 import { API_BASE_URL } from "../../context/AuthContext";
 import { useState } from "react";
-import ThemedText from "../../components/ThemedText";
-import ThemedTextInput from "../../components/ThemedTextInput";
-import ThemedView from "../../components/ThemedView";
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { getToken } from "../../utils/secureStorage";
 
 export default function CreateFamilyScreen() {
@@ -40,10 +37,10 @@ export default function CreateFamilyScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Create Family</ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.title}>Create Family</Text>
 
-      <ThemedTextInput
+      <TextInput
         placeholder="Family Name"
         style={styles.input}
         onChangeText={(text) => setValue("name", text)}
@@ -54,7 +51,7 @@ export default function CreateFamilyScreen() {
           {loading? "Creating Family....." : "Create Family"}
         </Text>
       </Pressable>
-    </ThemedView>
+    </View>
   );
 }
 

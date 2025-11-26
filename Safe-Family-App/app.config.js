@@ -8,11 +8,11 @@ export default
     "scheme": "safe-family-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon6.png",
+    "icon": "./assets/icon7.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/icon6.png",
+      "image": "./assets/icon7.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -25,7 +25,7 @@ export default
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon6.png",
+        "foregroundImage": "./assets/icon7.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

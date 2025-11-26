@@ -175,9 +175,9 @@ export default function MapScreen() {
 
         <Pressable style={[styles.fab, { bottom: 120 }]}
           onPress={centerOnMe}
-          disabled={sending}
+          disabled={loading}
         >
-        {sending ? (
+        {loading ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
           <Text style={styles.fabText}>Me</Text>

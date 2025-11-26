@@ -1,4 +1,3 @@
-// backend/src/routes/family.ts
 import { Router } from "express";
 import { createFamily, joinFamily, getMyFamily, leaveFamily } from "../controllers/familyController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
@@ -9,6 +8,5 @@ router.post("/create", authMiddleware, createFamily);
 router.post("/join", authMiddleware, joinFamily);
 router.get("/", authMiddleware, getMyFamily);
 router.post("/leave", authMiddleware, leaveFamily);
-
 
 export default router;

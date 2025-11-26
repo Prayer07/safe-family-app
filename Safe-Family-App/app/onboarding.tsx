@@ -1,16 +1,14 @@
 // app/welcome.tsx
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import ThemedView from "../components/ThemedView";
-import ThemedText from "../components/ThemedText";
 import React from "react";
 
 export default function Welcome() {
   const router = useRouter();
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Select One</ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.title}>Select One</Text>
 
       <Pressable
         style={styles.button}
@@ -25,7 +23,7 @@ export default function Welcome() {
       >
         <Text style={styles.buttonText}>Join Family</Text>
       </Pressable>
-    </ThemedView>
+    </View>
   );
 }
 

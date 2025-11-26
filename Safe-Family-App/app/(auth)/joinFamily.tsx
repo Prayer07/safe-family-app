@@ -3,11 +3,8 @@ import axios from "axios";
 import { useRouter } from "expo-router";
 import { API_BASE_URL } from "../../context/AuthContext";
 import { useState } from "react";
-import ThemedText from "../../components/ThemedText";
-import ThemedTextInput from "../../components/ThemedTextInput";
-import ThemedView from "../../components/ThemedView";
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, View, Text, TextInput } from "react-native";
 import { getToken } from "../../utils/secureStorage";
 
 export default function JoinFamilyScreen() {
@@ -39,20 +36,20 @@ export default function JoinFamilyScreen() {
   };
 
    return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Join Family</ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.title}>Join Family</Text>
 
-      <ThemedTextInput
+      <TextInput
          placeholder="Enter Invite Code"
          style={styles.input}
          onChangeText={(text) => setValue("inviteCode", text)} />
 
       <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <ThemedText style={styles.buttonText}>
+        <Text style={styles.buttonText}>
           {loading? "Joining Family....." : "Join Family"}
-        </ThemedText>
+        </Text>
       </Pressable>
-    </ThemedView>
+    </View>
   );
 }
 
