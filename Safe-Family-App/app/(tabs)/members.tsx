@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#1E90FF",
     padding: 20,
-    paddingTop: 1,
+    paddingTop: 5,
   },
   familyName: {
     fontSize: 24,
